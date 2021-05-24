@@ -169,7 +169,7 @@ def lookup_xf_user(steam_id64):
     connection = pymysql.connect(
         host=database['host'],
         user=database['user'],
-        port=database['port'],
+        port=int(database['port']),
         password=database['pass'],
         database=database['database'],
         cursorclass=pymysql.cursors.DictCursor
