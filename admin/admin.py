@@ -142,6 +142,13 @@ def on_player_activate(event):
 # =============================================================================
 # >> UTILS
 # =============================================================================
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        thread = GameThread(target=fn, args=args, kwargs=kwargs)
+        thread.daemon = True
+        thread.start()
+    return wrapper
+
 @threaded
 def assign_permissions(player):
     steamid_64 = int(player.steamid.split(":")[2].replace("]", "")) + 76561197960265728
@@ -179,10 +186,3 @@ def lookup_xf_user(steam_id64):
         result = cursor.fetchone()
 
         return result
-
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        thread = GameThread(target=fn, args=args, kwargs=kwargs)
-        thread.daemon = True
-        thread.start()
-    return wrapper
