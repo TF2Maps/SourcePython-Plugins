@@ -19,6 +19,7 @@ import os
 
 # 3rd Party Imports
 import vdf
+import pymysql
 
 # =============================================================================
 # >> FILTERS
@@ -137,7 +138,8 @@ def on_player_activate(event):
     index = index_from_userid(args['userid'])
     player = Player(index)
 
-    assign_permissions(player)
+    if player.is_player():
+        assign_permissions(player)
 
 # =============================================================================
 # >> UTILS
@@ -151,6 +153,8 @@ def threaded(fn):
 
 @threaded
 def assign_permissions(player):
+    if player.is_bot:
+        return
     steamid_64 = int(player.steamid.split(":")[2].replace("]", "")) + 76561197960265728
     xf_user = lookup_xf_user(steamid_64)
 
