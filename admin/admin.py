@@ -153,8 +153,6 @@ def threaded(fn):
 
 @threaded
 def assign_permissions(player):
-    if player.is_bot:
-        return
     steamid_64 = int(player.steamid.split(":")[2].replace("]", "")) + 76561197960265728
     xf_user = lookup_xf_user(steamid_64)
 
