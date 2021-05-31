@@ -55,7 +55,7 @@ def download_map(map_url, requester_index):
     if map_url.endswith(".bsp"):
         filename = re.search(r"[A-Za-z0-9_]+.bsp$", map_url).group()
         dest_path = os.path.join(os.getcwd(), f"{SV_MAPDL_PATH.get_string()}/{filename}")
-rr
+
         SayText2(f"{TEXT_PREFIX} Downloading map {filename}").send(requester_index)
         print(f"Downloading map {filename}")
         download_file(map_url, dest_path)
