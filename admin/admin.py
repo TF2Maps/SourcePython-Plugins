@@ -221,7 +221,7 @@ def assign_permissions(player):
     secondary_groups = [int(gid) for gid in xf_user['secondary_group_ids'].decode('utf-8').split(",")]
 
     if xf_user['user_group_id'] == 2 and 19 in secondary_groups:
-        USERS[player.steamid] = XF_RANKS["VIP"]
+        USERS[player.steamid] = XF_RANKS[19]
     else:
         USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
 
