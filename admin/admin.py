@@ -2,6 +2,7 @@
 # >> IMPORTS
 # =============================================================================
 # Source.Python Imports
+from colors import *
 from commands.typed import TypedSayCommand, TypedClientCommand
 from events import Event
 from engines.server import engine_server
@@ -9,8 +10,9 @@ from entities.helpers import index_from_edict
 from listeners.tick import GameThread
 from players.helpers import index_from_userid
 from filters.players import PlayerIter, Player
-
-from colors import ORANGE, WHITE
+from messages.hooks import HookUserMessage
+from messages import SayText2
+from listeners.tick import Delay
 import paths
 
 # Core Imports
@@ -20,6 +22,26 @@ import os
 # 3rd Party Imports
 import vdf
 import pymysql
+
+
+# =============================================================================
+# >> GLOBAL VARS
+# =============================================================================
+USERS = {}
+XF_RANKS = {
+    19: "VIP",
+    36: "Server Mod",
+    38: "Gold Star",
+    3: "Senior Staff",
+    4: "Staff"
+}
+RANK_PREFIXES = {
+    "VIP": f"{OLIVE}VIP",
+    "Server Mod": f"{LIGHT_BLUE}Server Mod",
+    "Gold Star": f"{YELLOW}Gold Star",
+    "Senior Staff": f"{PURPLE}Senior Staff",
+    "Staff": f"{RED}Staff"
+}
 
 # =============================================================================
 # >> FILTERS
@@ -141,6 +163,40 @@ def on_player_activate(event):
     if player.is_player():
         assign_permissions(player)
 
+@HookUserMessage('SayText2')
+def _saytext2_hook(recipients, data):
+    global USERS
+    global RANK_PREFIXES
+    key = data.message
+
+    # Is this message from a player sending chat?
+    if key not in ["TF_Chat_All", "TF_Chat_Team", "TF_Chat_Dead", "TF_Chat_AllDead", "TF_Chat_AllSpec", "TF_Chat_Spec"]:
+        return
+
+    player = Player(data.index)
+
+    # Check if player has a rank in global vars
+    rank = USERS.get(player.steamid)
+    if not rank:
+        return
+
+    prefix = f"{WHITE}[{RANK_PREFIXES[rank]}{WHITE}] "
+    tokens = {'data': data, 'prefix': prefix}
+
+    # Use a delay to avoid crashing the server
+    Delay(0, _send_new_message, (key, data.index, list(recipients)), tokens)
+
+    # Remove all recipients for the current message to block it
+    recipients.remove_all_players()
+
+def _send_new_message(key, index, *ply_indexes, **tokens):
+    message = SayText2(
+        message="{prefix} \x03{data.param1}\x01: {data.param2}",
+        index=index,
+    )
+    message.send(*ply_indexes, **tokens)
+
+
 # =============================================================================
 # >> UTILS
 # =============================================================================
@@ -153,12 +209,25 @@ def threaded(fn):
 
 @threaded
 def assign_permissions(player):
+    global USERS
+    global XF_RANKS
+
     steamid_64 = int(player.steamid.split(":")[2].replace("]", "")) + 76561197960265728
     xf_user = lookup_xf_user(steamid_64)
 
+    if not xf_user:
+        return
+
+    secondary_groups = [int(gid) for gid in xf_user['secondary_group_ids'].decode('utf-8').split(",")]
+
+    if xf_user['user_group_id'] == 2 and 19 in secondary_groups:
+        USERS[player.steamid] = XF_RANKS["VIP"]
+    else:
+        USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
+
     if xf_user['user_group_id'] in [36, 38, 3, 4]:
         player.permissions.add('*.*')
-        print(f"granting permissions to {player}")
+        print(f"SP Admin: Granting *.* permissions to {player.name}")
 
 def lookup_xf_user(steam_id64):
     filepath = os.path.join(paths.GAME_PATH, "addons/sourcemod/configs/databases.cfg")
