@@ -36,8 +36,8 @@ XF_RANKS = {
     4: "Staff"
 }
 RANK_PREFIXES = {
-    "VIP": f"{OLIVE}VIP",
-    "Server Mod": f"{LIGHT_BLUE}Server Mod",
+    "VIP": f"{DARK_GREEN}VIP",
+    "Server Mod": f"{CYAN}Server Mod",
     "Gold Star": f"{YELLOW}Gold Star",
     "Senior Staff": f"{PURPLE}Senior Staff",
     "Staff": f"{RED}Staff"
