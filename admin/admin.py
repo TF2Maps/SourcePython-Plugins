@@ -179,8 +179,15 @@ def _saytext2_hook(recipients, data):
     rank = USERS.get(player.steamid)
     if not rank:
         return
+    
+    prefix = ""
 
-    prefix = f"{WHITE}[{RANK_PREFIXES[rank]}{WHITE}] "
+    if key in ["TF_Chat_Dead", "TF_Chat_AllDead"]:
+        prefix += "*DEAD* "
+    if key in ["TF_Chat_Team"]:
+        prefix += "(TEAM) "
+    prefix += f"{WHITE}[{RANK_PREFIXES[rank]}{WHITE}] "
+
     tokens = {'data': data, 'prefix': prefix}
 
     # Use a delay to avoid crashing the server
