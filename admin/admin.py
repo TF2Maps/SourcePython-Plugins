@@ -32,6 +32,7 @@ XF_RANKS = {
     19: "VIP",
     36: "Server Mod",
     38: "Gold Star",
+    39: "Comp Host",
     3: "Senior Staff",
     4: "Staff"
 }
@@ -39,6 +40,7 @@ RANK_PREFIXES = {
     "VIP": f"{DARK_GREEN}VIP",
     "Server Mod": f"{CYAN}Server Mod",
     "Gold Star": f"{YELLOW}Gold Star",
+    "Comp Host": f"{YELLOW}Comp Host",
     "Senior Staff": f"{PURPLE}Senior Staff",
     "Staff": f"{RED}Staff"
 }
@@ -232,7 +234,7 @@ def assign_permissions(player):
     else:
         USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
 
-    if xf_user['user_group_id'] in [36, 38, 3, 4]:
+    if xf_user['user_group_id'] in [39, 36, 38, 3, 4]:
         player.permissions.add('*.*')
         print(f"SP Admin: Granting *.* permissions to {player.name}")
 
