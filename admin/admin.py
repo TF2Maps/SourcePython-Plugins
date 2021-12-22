@@ -229,10 +229,13 @@ def assign_permissions(player):
 
     secondary_groups = [int(gid) for gid in xf_user['secondary_group_ids'].decode('utf-8').split(",")]
 
-    if xf_user['user_group_id'] == 2 and 19 in secondary_groups:
-        USERS[player.steamid] = XF_RANKS[19]
-    else:
-        USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
+    if xf_user['user_group_id'] == 2:
+        if 19 in secondary_groups:
+            USERS[player.steamid] = XF_RANKS[19]
+        elif 39 in secondary_groups:
+            USERS[player.steamid] = XF_RANKS[39]
+            player.permissions.add("*.*")
+            print(f"SP Admin: Granting *.* permissions to {player.name}")
 
     if xf_user['user_group_id'] in [39, 36, 38, 3, 4]:
         player.permissions.add('*.*')
