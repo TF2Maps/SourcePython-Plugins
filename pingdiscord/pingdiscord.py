@@ -51,7 +51,7 @@ def check_map():
         map_name = global_vars.map_name
         server_hostname = socket.gethostname()
 
-        if player_count >= 10:
+        if player_count >= 4:
             map_data = get_pending_map_data(map_name)
                 
             if map_data:
