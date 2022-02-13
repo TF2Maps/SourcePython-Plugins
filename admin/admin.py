@@ -261,8 +261,8 @@ def lookup_xf_user(steam_id64):
     with connection.cursor() as cursor:
         query = (
             "SELECT xf_user.user_id, xf_user.username, xf_user.user_group_id, xf_user.secondary_group_ids "
-            "FROM xf_user INNER JOIN xf_user_external_auth ON xf_user.user_id=xf_user_external_auth.user_id "
-            "WHERE provider='steam' AND provider_key=(%s) LIMIT 1"
+            "FROM xf_user INNER JOIN xf_user_connected_account ON xf_user.user_id=xf_user_connected_account.user_id "
+            "WHERE provider='th_cap_steam' AND provider_key=(%s) LIMIT 1"
         )
 
         cursor.execute(query, (steam_id64))
