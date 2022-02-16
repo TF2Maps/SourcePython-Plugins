@@ -238,6 +238,7 @@ def assign_permissions(player):
             print(f"SP Admin: Granting *.* permissions to {player.name}")
 
     if xf_user['user_group_id'] in [39, 36, 38, 3, 4]:
+        USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
         player.permissions.add('*.*')
         print(f"SP Admin: Granting *.* permissions to {player.name}")
 
