@@ -32,6 +32,7 @@ XF_RANKS = {
     19: "VIP",
     36: "Server Mod",
     38: "Gold Star",
+    39: "Comp Host",
     3: "Senior Staff",
     4: "Staff"
 }
@@ -39,6 +40,7 @@ RANK_PREFIXES = {
     "VIP": f"{DARK_GREEN}VIP",
     "Server Mod": f"{CYAN}Server Mod",
     "Gold Star": f"{YELLOW}Gold Star",
+    "Comp Host": f"{YELLOW}Comp Host",
     "Senior Staff": f"{PURPLE}Senior Staff",
     "Staff": f"{RED}Staff"
 }
@@ -227,12 +229,16 @@ def assign_permissions(player):
 
     secondary_groups = [int(gid) for gid in xf_user['secondary_group_ids'].decode('utf-8').split(",")]
 
-    if xf_user['user_group_id'] == 2 and 19 in secondary_groups:
-        USERS[player.steamid] = XF_RANKS[19]
-    else:
-        USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
+    if xf_user['user_group_id'] == 2:
+        if 19 in secondary_groups:
+            USERS[player.steamid] = XF_RANKS[19]
+        elif 39 in secondary_groups:
+            USERS[player.steamid] = XF_RANKS[39]
+            player.permissions.add("*.*")
+            print(f"SP Admin: Granting *.* permissions to {player.name}")
 
-    if xf_user['user_group_id'] in [36, 38, 3, 4]:
+    if xf_user['user_group_id'] in [39, 36, 38, 3, 4]:
+        USERS[player.steamid] = XF_RANKS[xf_user['user_group_id']]
         player.permissions.add('*.*')
         print(f"SP Admin: Granting *.* permissions to {player.name}")
 
@@ -256,8 +262,8 @@ def lookup_xf_user(steam_id64):
     with connection.cursor() as cursor:
         query = (
             "SELECT xf_user.user_id, xf_user.username, xf_user.user_group_id, xf_user.secondary_group_ids "
-            "FROM xf_user INNER JOIN xf_user_external_auth ON xf_user.user_id=xf_user_external_auth.user_id "
-            "WHERE provider='steam' AND provider_key=(%s) LIMIT 1"
+            "FROM xf_user INNER JOIN xf_user_connected_account ON xf_user.user_id=xf_user_connected_account.user_id "
+            "WHERE provider='th_cap_steam' AND provider_key=(%s) LIMIT 1"
         )
 
         cursor.execute(query, (steam_id64))

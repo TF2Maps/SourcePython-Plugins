@@ -73,7 +73,7 @@ def download_map(map_url, requester_index):
 
     # If attachment form data
     else:
-        response = requests.head(map_url)
+        response = requests.head(map_url, verify=False)
         attachment = response.headers['Content-Disposition']
         filename = re.search(r"[A-Za-z0-9_]+.bsp(.bz2)?", attachment).group()
 
@@ -101,7 +101,7 @@ def download_map(map_url, requester_index):
 
 
 def download_file(url, dest_path):
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     response.raise_for_status()
 
     with open(dest_path, "wb") as file:
