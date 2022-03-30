@@ -68,7 +68,7 @@ def send_discord_message(map_name, player_count, discord_user_id, server_url):
 
     data = {
         "content" : f"<@{discord_user_id}> {map_name} is currently being played on {server_url} with {player_count} players.",
-        "username" : "Nesman-Dev"
+        "username" : "Mecha Engineer"
     }            
     result = requests.post(config['webhook_url'], json=data)
     result.raise_for_status()
@@ -80,7 +80,7 @@ def remove_map_from_queue(map_name):
     with connection.cursor() as cursor:
         query = (
             "UPDATE maps "
-            "SET status='played' "
+            "SET status='played', played=now() "
             "WHERE map=(%s) and status='pending' "
         )
         cursor.execute(query, (map_name))
