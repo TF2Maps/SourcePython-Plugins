@@ -80,7 +80,7 @@ def remove_map_from_queue(map_name):
     with connection.cursor() as cursor:
         query = (
             "UPDATE maps "
-            "SET status='played' "
+            "SET status='played', played=now() "
             "WHERE map=(%s) and status='pending' "
         )
         cursor.execute(query, (map_name))
