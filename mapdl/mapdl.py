@@ -1,4 +1,5 @@
 # Core Imports
+from ssl import VerifyFlags
 from commands.typed import TypedSayCommand
 from commands.typed import TypedServerCommand, TypedClientCommand
 from listeners.tick import GameThread
@@ -38,7 +39,7 @@ def load():
 @TypedServerCommand('mapdl')
 def on_mapdl(command_info, map_url: str):
     if not map_url.startswith("http"):
-        download_map(f"http://redirect.tf2maps.net/maps/{map_url}.bz2", command_info.index)
+        download_map(f"http://ewr1.vultrobjects.com/tf2maps-maps/maps/{map_url}.bz2", command_info.index)
     else:
         download_map(map_url, command_info.index)
 
@@ -73,8 +74,9 @@ def download_map(map_url, requester_index):
 
     # If attachment form data
     else:
-        response = requests.head(map_url, verify=False)
-        attachment = response.headers['Content-Disposition']
+
+        response = requests.get(map_url, allow_redirects=True, verify=False)
+        attachment = response.headers.get('Content-Disposition')
         filename = re.search(r"[A-Za-z0-9_]+.bsp(.bz2)?", attachment).group()
 
         # Attachment is in bz2
